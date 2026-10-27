@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Aim Trainer</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #0f0f1a;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: "Russo One", Arial, sans-serif;
+            font-size: 44px;
+            color: #00d9ff;
+            margin-bottom: 5px;
+        }
+
+        .podpis {
+            color: #888899;
+            margin-top: 0;
+        }
+
+        #info {
+            font-family: "Russo One", Arial, sans-serif;
+            font-size: 20px;
+            margin: 20px 0 15px;
+        }
+
+        #info span {
+            color: #00d9ff;
+        }
+
+        #field {
+            width: 600px;
+            height: 400px;
+            background-color: #1a1a2e;
+            border: 3px solid #7b2ff7;
+            border-radius: 12px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            cursor: crosshair;
+            box-shadow: 0 0 25px rgba(123, 47, 247, 0.4);
+        }
+
+        #message {
+            margin-top: 150px;
+        }
+
+        #message h2 {
+            font-family: "Russo One", Arial, sans-serif;
+            font-size: 30px;
+            margin: 0 0 10px;
+        }
+
+        .target {
+            position: absolute;
+            background-color: #00d9ff;
+            border: 4px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #00d9ff;
+            cursor: pointer;
+        }
+
+        #modes {
+            margin-top: 25px;
+        }
+
+        button {
+            font-family: "Russo One", Arial, sans-serif;
+            font-size: 16px;
+            padding: 12px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 8px;
+            background-color: #7b2ff7;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: #9a5cff;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>AIM TRAINER</h1>
+    <p class="podpis">Тренировка прицела</p>
+
+    <div id="info">
+        Очки: <span id="score">0</span> &nbsp;&nbsp; <span id="lives">❤️❤️❤️</span>
+    </div>
+
+    <div id="field">
+        <div id="message">
+            <h2>Выбери режим</h2>
+        </div>
+    </div>
+
+    <div id="modes">
+        <button onclick="startGame('classic')">Классика</button>
+        <button onclick="startGame('speed')">Ускорение</button>
+        <button onclick="startGame('time')">На время</button>
+        <button onclick="startGame('small')">Мелкие</button>
+        <button onclick="startGame('nomiss')">Без промахов</button>
+    </div>
+
+    <script>
+        let score = 0;
+        let lives = 3;
+        let mode = "";
+        let targetLife = 1500;
+        let timeLeft = 30;
+        let timer;
+        let clock;
+        let playing = false;
+
+        let field = document.getElementById("field");
+
+        function startGame(newMode) {
+            mode = newMode;
+            score = 0;
+            lives = 3;
+            targetLife = 1500;
+            timeLeft = 30;
+            playing = true;
+
+            field.innerHTML = "";
+            document.getElementById("modes").style.display = "none";
+
+            if (mode == "time") {
+                clock = setInterval(function () {
+                    timeLeft = timeLeft - 1;
+                    updateInfo();
+                    if (timeLeft <= 0) {
+                        gameOver();
+                    }
+                }, 1000);
+            }
+
+            updateInfo();
+            newTarget();
+        }
+
+        function updateInfo() {
+            document.getElementById("score").innerHTML = score;
+
+            if (mode == "time") {
+                document.getElementById("lives").innerHTML = "⏱ " + timeLeft;
+            } else {
+                document.getElementById("lives").innerHTML = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
+            }
+        }
+
+        function newTarget() {
+            if (playing == false) {
+                return;
+            }
+
+            let target = document.createElement("div");
+            target.className = "target";
+
+            let size = 45;
+            if (mode == "small") {
+                size = 15 + Math.random() * 40;
+            }
+            target.style.width = size + "px";
+            target.style.height = size + "px";
+
+            let x = Math.random() * (600 - size - 8);
+            let y = Math.random() * (400 - size - 8);
+            target.style.left = x + "px";
+            target.style.top = y + "px";
+
+            target.onclick = function (event) {
+                event.stopPropagation();
+                score = score + 1;
+
+                if (mode == "speed" && targetLife > 400) {
+                    targetLife = targetLife - 50;
+                }
+
+                clearTimeout(timer);
+                target.remove();
+                updateInfo();
+                newTarget();
+            };
+
+            field.appendChild(target);
+
+            timer = setTimeout(function () {
+                target.remove();
+                if (mode != "time") {
+                    loseLife();
+                }
+                newTarget();
+            }, targetLife);
+        }
+
+        field.onclick = function () {
+            if (playing == true && mode == "nomiss") {
+                loseLife();
+            }
+        };
+
+        function loseLife() {
+            lives = lives - 1;
+            updateInfo();
+            if (lives <= 0) {
+                gameOver();
+            }
+        }
+
+        function gameOver() {
+            playing = false;
+            clearTimeout(timer);
+            clearInterval(clock);
+
+            let text = "GAME OVER";
+            if (mode == "time") {
+                text = "ВРЕМЯ ВЫШЛО";
+            }
+
+            field.innerHTML =
+                "<div id='message'>" +
+                "<h2>" + text + "</h2>" +
+                "<p>Твои очки: " + score + "</p>" +
+                "</div>";
+
+            document.getElementById("modes").style.display = "block";
+        }
+    </script>
+
+</body>
+</html>
