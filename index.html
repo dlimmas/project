@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Прицел — аим тренер</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="frame">
+
+        <header class="topbar">
+            <div class="logo">◣◢ AIM</div>
+
+            <nav>
+                <a href="#game">Игра</a>
+                <a href="#stats">Стата</a>
+            </nav>
+        </header>
+
+        <h1 class="title">ПРИЦЕЛ</h1>
+
+        <div class="hero" id="game">
+            <div class="center">
+                <div id="info">
+                    <div>Очки <span id="score">0</span></div>
+                    <div><span id="lives">❤️❤️❤️</span></div>
+                </div>
+
+                <div id="field">
+                    <div class="message">
+                        <h2>Готов?</h2>
+                        <p>выбери режим снизу</p>
+                    </div>
+                </div>
+
+                <div id="menu">
+                    <button onclick="startGame('classic')">Классика</button>
+                    <button onclick="startGame('speed')">Ускорение</button>
+                    <button onclick="startGame('time')">30 секунд</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom">
+            <span>ЛОВИ</span>
+            <span class="plus">+</span>
+            <span>ПОПАДАЙ</span>
+        </div>
+    </div>
+
+    <section class="frame small-frame" id="stats">
+        <h2 class="section-title">Последняя игра</h2>
+
+        <div class="cards">
+            <div class="card">
+                <span id="statHits">0</span>
+                <p>попаданий</p>
+            </div>
+            <div class="card">
+                <span id="statMisses">0</span>
+                <p>промахов</p>
+            </div>
+            <div class="card">
+                <span id="statAccuracy">0%</span>
+                <p>точность</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>сделано на HTML, CSS и JS · проектная работа</footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
